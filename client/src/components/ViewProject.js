@@ -12,7 +12,6 @@ class ViewProject extends React.Component {
   }
 
   componentDidMount() {
-    console.log("View Note thing", this.props.match.params.id);
     axios.get(`http://localhost:8000/projects/${this.props.match.params.id}`)
     .then(response => {
       this.setState({name: response.data.name})
@@ -23,8 +22,6 @@ class ViewProject extends React.Component {
   }
 
   showActionsHandler = (event) => {
-    console.log(event.target);
-    console.log(event.target.getAttribute('id'));
     let id = event.target.getAttribute('id');
     axios.get(`http://localhost:8000/projects/${id}/actions`)
       .then(response => {

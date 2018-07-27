@@ -24,8 +24,9 @@ server.get('/projects/', async (req, res, next) => {
 
 server.get('/projects/:id', async (req, res, next) => {
   try {
+    /* If the ID you provide is invalid the API will throw an error instead of
+    returning a failed response so I just made the server error a 404 */
     const project = await projectModel.get(req.params.id);
-    console.log('hey');
     res.status(200).json(project);
   } catch(err) {
     next({
@@ -109,9 +110,9 @@ server.get('/projects/:id/actions', async (req, res, next) => {
   try {
     const actions = await projectModel.getProjectActions(req.params.id);
     res.status(200).json(actions);
-  } catch(err) {
+  } catch(err) { //Once again 404 here because API method throws Error
     next({
-      code: 500,
+      code: 404,
       userMessage: "Server Error: Project not found",
       consoleError: err,
       consoleMessage: `${err}`
@@ -126,9 +127,10 @@ server.get('/actions/', async (req, res, next) => {
     const actions = await actionModel.get();
     res.status(200).json(actions);
   } catch(err) {
-      next({code: 500, userMessage: "Server Error: Action could not be retrieved", consoleMessage: err});
+      next({code: 500,
+        userMessage: "Server Error: Actions could not be retrieved",
+        consoleMessage: err});
     }
-    //NOTE Need to change this next() statement
 })
 
 server.get('/actions/:id', async (req, res, next) => {
@@ -137,19 +139,34 @@ server.get('/actions/:id', async (req, res, next) => {
     res.status(200).json(action);
   } catch(err) {
     next({code: 404, userMessage: `NotFound: No action with id ${req.params.id} `, consoleMessage: err});
-    //May want to come back and rewrite this error, I don't know if it's entirely accurate
+    //Note previous comments about get methods in these DBs
   }
 })
 
-//NOTE Need to add checks in here for length retrictions and for well-formed notes
 server.post('/actions/', async (req, res, next) => {
   const {project_id, description, notes} = req.body;
+  if (!(project_id && description && notes)) {
+    return next({
+      code: 400,
+      userMessage: "Bad Request: Provide a project_id, description and notes"
+    });
+  }
+  if (description.length > 128) {
+    return next({
+      code: 400,
+      userMessage: `Bad Request: Description is ${description.length} characters, must be 128 or less`
+    });
+  }
   try {
     newAction = await actionModel.insert({project_id, description, notes})
-    console.log(newAction);
     res.status(200).json(newAction);
   } catch(err) {
-      next({code: 500, userMessage: "Server Error: Action could not be created", consoleError: err, consoleMessage: `${err}`});
+      next({
+        code: 500,
+        userMessage: "Server Error: Action could not be created",
+        consoleError: err,
+        consoleMessage: `${err}`
+      });
   }
 })
 
@@ -169,6 +186,18 @@ server.delete('/actions/:id', async (req, res, next) => {
 
 server.put('/actions/:id', async (req, res, next) => {
   const {project_id, description, notes} = req.body;
+  if (!(project_id && description && notes)) {
+    return next({
+      code: 400,
+      userMessage: "Bad Request: Provide a project_id, description and notes"
+    });
+  }
+  if (description.length > 128) {
+    return next({
+      code: 400,
+      userMessage: `Bad Request: Description is ${description.length} characters, must be 128 or less`
+    });
+  }
   try {
     const updatedAction = await actionModel.update(req.params.id, {project_id, description, notes});
     res.status(200).json(updatedAction);
@@ -182,6 +211,7 @@ server.put('/actions/:id', async (req, res, next) => {
   }
 })
 //END ACTIONS CRUD
+
 server.use((err, req, res, next) => {
   switch(err.code) {
     case 500:
