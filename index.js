@@ -7,7 +7,7 @@ const actionModel = require('./data/helpers/actionModel');
 server.use(cors());
 server.use(express.json());
 
-//BEGIN PROJECT CRUD
+//BEGIN PROJECTS CRUD
 server.get('/projects/', async (req, res, next) => {
   try {
     const projects = await projectModel.get();
@@ -119,9 +119,9 @@ server.get('/projects/:id/actions', async (req, res, next) => {
     });
   }
 })
-//END PROJECT CRUD
+//END PROJECTS CRUD
 
-//BEGIN ACTION CRUD
+//BEGIN ACTIONS CRUD
 server.get('/actions/', async (req, res, next) => {
   try {
     const actions = await actionModel.get();
