@@ -2,6 +2,18 @@ import React from 'react';
 import '../App.css';
 import axios from 'axios';
 import {NavLink} from 'react-router-dom';
+import styled from 'styled-components';
+
+const ShowButton = styled.button`
+  background: teal;
+  color: white;
+  width: 180px;
+  margin auto;
+  border-radius: 10px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  font-size: 14px;
+`;
 
 class ProjectList extends React.Component {
   constructor(props) {
@@ -27,16 +39,18 @@ class ProjectList extends React.Component {
   render() {
     return (
       <div key={this.props.project.id}>
-        <NavLink to={`/projects/${this.props.project.id}`} id={this.props.project.id}><h1>{this.props.project.name}</h1></NavLink>
+        <NavLink className="nav-link" to={`/projects/${this.props.project.id}`} id={this.props.project.id}><h1>{this.props.project.name}</h1></NavLink>
+        <h3>{this.props.project.description}</h3>
+        <ShowButton onClick={this.showActionsHandler} id={this.props.project.id}>Click to {this.state.showActions ? "hide":"show"} actions</ShowButton>
         <div>{this.state.showActions ? this.state.actions.map(action => {
           return (
             <div key={action.id}>
               <h3>{action.description}</h3>
-              <h4>{action.notes}</h4>
+              <p>{action.notes}</p>
             </div>
           )
         }): null}
-        <p onClick={this.showActionsHandler} id={this.props.project.id}>Click to {this.state.showActions ? "hide":"show"} actions</p>
+
         </div>
         <hr className="horizontal-rule"/>
       </div>
