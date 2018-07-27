@@ -1,9 +1,10 @@
 const express = require('express');
 const server = express();
+const cors = require('cors');
 const projectModel = require('./data/helpers/projectModel');
 const actionModel = require('./data/helpers/actionModel');
 
-
+server.use(cors());
 server.use(express.json());
 
 //BEGIN PROJECT CRUD
