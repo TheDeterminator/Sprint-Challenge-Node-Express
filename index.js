@@ -14,7 +14,7 @@ server.get('/projects/', async (req, res, next) => {
   } catch(err) {
     next({
       code: 500,
-      userMessage: "Server Error: Project could not be created",
+      userMessage: "Server Error: Projects could not be retrieved",
       consoleError: err,
       consoleMessage: `${err}`
     });
@@ -24,11 +24,12 @@ server.get('/projects/', async (req, res, next) => {
 server.get('/projects/:id', async (req, res, next) => {
   try {
     const project = await projectModel.get(req.params.id);
+    console.log('hey');
     res.status(200).json(project);
   } catch(err) {
     next({
-      code: 500,
-      userMessage: "Server Error: Project not found",
+      code: 404,
+      userMessage: "Not Found: Project not found",
       consoleError: err,
       consoleMessage: `${err}`
     });
@@ -47,7 +48,7 @@ server.post('/projects', async (req, res, next) => {
     if (name.length > 128) {
       return next({
         code: 400,
-        userMessage: `Name is ${name.length} characters, must be 128 or less`
+        userMessage: `Bad Request: Name is ${name.length} characters, must be 128 or less`
       });
     }
     const newProject = await projectModel.insert({name, description});
